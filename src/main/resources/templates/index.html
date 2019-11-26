@@ -1,127 +1,179 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
-<meta charset="utf-8"></meta>
-<meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
-<meta name="viewport" content="width=device-width, initial-scale=1"></meta>
-<meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:th="http://www.thymeleaf.org">
+  
+    <head data-th-replace="header :: header"></head>
 
-<title>Web Scraper Service</title>
+    <body class="login">
+        <div data-th-replace="bg :: bg"></div>
+        
+        <div id="home-icon" class="magnifying-container">
+            <div class="magnifying">
+                <div class="handle"></div>
+                <div class="middle"></div>
+                <div class="top"></div>
+            </div>
+        </div>
+        <img id="home-title" style="z-index: 20; margin-left: 40%; margin-top: 3%" data-th-src="@{/img/title.png}"/>
+        <button id="start" style="position: absolute; width: 100px; margin-left: -50px; left: 50%; top: 65%;" class="btn btn-success">START</button>
+        
+        <div class="main-form">
+            <form role="form" data-th-action="@{index}" method="post">
+                <data-th-block data-th-if="${param.message}">
+                    <div class="alert alert-info alert-dismissable">
+                        <button type="button" class="close" data-dismiss="alert"
+                                aria-hidden="true">&times;</button>
+                        <span><strong data-th-text="${param.message[0]}">message</strong></span>
+                    </div>
+                </data-th-block>
+                
+                <div class="form-group">
+                    <label for="input_url">URL</label>
+                    <input required="required" type="url" class="form-control" id="input_url" name="url" placeholder="Enter url"></input>
+                </div>
+                <div class="form-group">
+                    <label for="input_path">Path for storing result documents</label>
+                    <input required="required" type="text" class="form-control" id="input_path" name="path" placeholder="Enter path"></input>
+                </div>
+                <div class="form-group">
+                    <label for="input_iteration">Number of maximum iteration(s)</label>
+                    <input required="required" type="number" min="1" max="1000000" class="form-control" id="input_iteration" name="iteration" placeholder="1"></input>
+                </div>
+                <div class="form-group">
+                    <label for="input_element">Element to scrape</label>
+                    <select required="required" class="form-control" id="input_element" name="element">
+                        <option value="all" selected="selected">All</option>
+                        <option value="link">Link element (&lt;a&gt;)</option>
+                        <option value="par">Paragraph element (&lt;p&gt;)</option>
+                        <option value="header">Header element (&lt;h1&gt;, &lt;h2&gt;, &lt;h3&gt;, &lt;h4&gt;, &lt;h5&gt;, &lt;h6&gt;)</option>
+                    </select>
+                </div>
+                <button style="width: 100px;position: relative;bottom: 0;left: 50%;margin-left: -50px;" class="btn btn-primary" type="submit">Go!!</button>
+<!--                <div>
+                    <input id="url" name="url" placeholder="Enter url..." type="url"
+                           class="form-control" required="required" />
+                    <input id="interation" name="iteration" placeholder="Enter number of iteration"
+                           type="number" max="1000000" min="1" required="required" class="form-control"/>
+                    <select id="element">
+                        <option value="all" selected="selected">All</option>
+                        <option value="link">Link element (&lt;a&gt;)</option>
+                        <option value="par">Paragraph element (&lt;p&gt;)</option>
+                        <option value="header">Header element (&lt;h1&gt;, &lt;h2&gt;, &lt;h3&gt;, &lt;h4&gt;, &lt;h5&gt;, &lt;h6&gt;)</option>
+                    </select>
+                </div>-->
+            </form>
+        </div>
+<!--        <div>
+            <a class="hiddenanchor" id="signup"></a> <a class="hiddenanchor"
+                                                        id="signin"></a>
 
-<!-- Bootstrap -->
-<link th:href="@{css/bootstrap.min.css}" rel="stylesheet"></link>
+            <div class="login_wrapper">
+                <div class="animate form login_form">
+                    <section class="login_content" style="text-shadow: none;">
 
-<!-- Font Awesome -->
-<link th:href="@{css/font-awesome.min.css}" rel="stylesheet"></link>
+                        <form role="form" data-th-action="@{index}" method="post">
 
-<link th:href="@{css/custom.min.css}" rel="stylesheet"></link>
-</head>
+                            <h3>Summary of all links on a page</h3>
 
-<body class="login">
-	<div>
-		<a class="hiddenanchor" id="signup"></a> <a class="hiddenanchor"
-			id="signin"></a>
+                            <data-th-block data-th-if="${param.message}">
+                                <div class="alert alert-info alert-dismissable">
+                                    <button type="button" class="close" data-dismiss="alert"
+                                            aria-hidden="true">&times;</button>
+                                    <span><strong data-th-text="${param.message[0]}">message</strong></span>
+                                </div>
+                            </data-th-block>
+                            <div>
+                                <input id="url" name="url" placeholder="Enter url..." type="url"
+                                       class="form-control" required="required" />
+                                <input id="interation" name="iteration" placeholder="Enter number of iteration"
+                                       type="number" max="1000000" min="1" required="required" class="form-control"/>
+                                <select id="element">
+                                    <option value="all" selected="selected">All</option>
+                                    <option value="link">Link element (&lt;a&gt;)</option>
+                                    <option value="par">Paragraph element (&lt;p&gt;)</option>
+                                    <option value="header">Header element (&lt;h1&gt;, &lt;h2&gt;, &lt;h3&gt;, &lt;h4&gt;, &lt;h5&gt;, &lt;h6&gt;)</option>
+                                </select>
+                            </div>
+                            <br /> <br />
+                            <div>
+                                <button type="submit" class="btn btn-dark">MVC Submit</button>
+                                <button type="button" class="btn btn-dark"
+                                        onclick="getSummary();">Restful Submit</button>
+                            </div>
 
-		<div class="login_wrapper">
-			<div class="animate form login_form">
-				<section class="login_content" style="text-shadow: none;">
+                            <div class="clearfix"></div>
 
-					<form role="form" th:action="@{index}" method="post">
+                            <div class="separator">
+                                <div id="responseStatus">
+                                    <data-th-block data-th-if="${pageSummary}">
+                                        <div class="block">
+                                            <div class="block_content">
+                                                <h2 class="title">
+                                                    <strong>Summary</strong>
+                                                </h2>
+                                                <div>
+                                                    <ul style="text-align: left;">
+                                                        <li data-th-each="link : ${pageSummary}"><a
+                                                                data-th-href="${'http://' + link.key}" data-th-text="${link.key + ' - ' + link.value}" target="_blank"></a></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
 
-						<h3>Summary of all links on a page</h3>
-
-						<th:block th:if="${param.message}">
-							<div class="alert alert-info alert-dismissable">
-								<button type="button" class="close" data-dismiss="alert"
-									aria-hidden="true">&times;</button>
-								<span><strong th:text="${param.message[0]}">message</strong></span>
-							</div>
-						</th:block>
-						<div>
-							<input id="url" name="url" placeholder="Enter url..." type="url"
-								class="form-control" required="required" />
-						</div>
-						<br /> <br />
-						<div>
-							<button type="submit" class="btn btn-dark">MVC Submit</button>
-							<button type="button" class="btn btn-dark"
-								onclick="getSummary();">Restful Submit</button>
-						</div>
-
-						<div class="clearfix"></div>
-
-						<div class="separator">
-							<div id="responseStatus">
-								<th:block th:if="${pageSummary}">
-									<div class="block">
-										<div class="block_content">
-											<h2 class="title">
-												<strong>Summary</strong>
-											</h2>
-											<div>
-												<ul style="text-align: left;">
-													<li th:each="link : ${pageSummary}"><a
-														th:href="${'http://' + link.key}" th:text="${link.key + ' - ' + link.value}" target="_blank"></a></li>
-												</ul>
-											</div>
-										</div>
-									</div>
-
-								</th:block>
-							</div>
-							<div class="clearfix"></div>
-							<br />
-
-						</div>
-					</form>
-				</section>
-			</div>
-		</div>
-	</div>
-	<script
-		src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-	<script type="text/javascript">
-		function getSummary() {
-			$("#responseStatus").empty();
-			$("#responseStatus")
-					.append(
-							'<div class="block"><div class="block_content"><h2 class="title" style="text-align: center;"><strong><a>Requesting Summary...</a></strong></h2></div></div>');
-			$
-					.getJSON(
-							"summarizeLinksOnPage",
-							{
-								url : $('#url').val()
-							},
-							function(data) {
-								$("#responseStatus").empty();
-								$("#responseStatus")
-										.append(
-												'<div class="block"><div class="block_content"><h2 class="title"><strong>Summary</strong></h2><div><ul id="statsDiv"></ul></div></div></div>');
-								$
-										.each(
-												data,
-												function(key, val) {
-													$("#statsDiv")
-															.append(
-																	'<li style="text-align: left;">'
-																			+ '<a href="http://' + key + '" target="_blank">'
-																			+ key
-																			+ '</a>'
-																			+ " - "
-																			+ val
-																			+ '</li>');
-
-												})
-							})
-					.fail(
-							function(jqxhr, textStatus, error) {
-								$("#responseStatus").empty();
-								$("#responseStatus")
-										.append(
-												'<div class="block"><div class="block_content"><h2 class="title" style="text-align: center;"><strong>Malformed or Invalid URL: ' + $('#url').val() + '</strong></h2></div></div>');
-							});
-		}
-	</script>
-</body>
+                                    </data-th-block>
+                                </div>
+                                <div class="clearfix"></div>
+                                <br />
+                            </div>
+                        </form>
+                    </section>
+                </div>
+            </div>
+        </div>
+        <script
+        src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script type="text/javascript">
+            function getSummary() {
+                $("#responseStatus").empty();
+                $("#responseStatus").append(
+                    '<div class="block"><div class="block_content"><h2 class="title" style="text-align: center;"><strong><a>Requesting Summary...</a></strong></h2></div></div>');
+                $.getJSON("summarizeLinksOnPage", {url: $('#url').val()}, function(data) {
+                    $("#responseStatus").empty();
+                    $("#responseStatus").append(
+                        '<div class="block"><div class="block_content"><h2 class="title"><strong>Summary</strong></h2><div><ul id="statsDiv"></ul></div></div></div>');
+                    $.each(data, function(key, val) {
+                        $("#statsDiv").append(
+                            '<li style="text-align: left;">' +
+                            '<a href="http://' + key + '" target="_blank">' +
+                            key +
+                            '</a>' +
+                            " - " +
+                            val +
+                            '</li>');
+                      });
+                }).fail(function(jqxhr, textStatus, error) {
+                    $("#responseStatus").empty();
+                    $("#responseStatus").append(
+                        '<div class="block"><div class="block_content"><h2 class="title" style="text-align: center;"><strong>Malformed or Invalid URL: ' + $('#url').val() + '</strong></h2></div></div>');
+                });
+            }
+        </script>-->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                $("#start").click(function () {
+                    animateCSS('#home-icon', 'fadeOutDown');
+                    animateCSS('#home-title', 'fadeOutDown');
+                    animateCSS('#start', 'fadeOutDown', function() {
+                        $("#home-icon").css("display", "none");
+                        $("#home-title").css("display", "none");
+                        $("#start").css("display", "none");
+                        animateCSS('.main-form', 'fadeInUp');
+                        console.log($(".main-form").css("display"));
+                        $(".main-form").css("display", "initial");
+                    });
+                });
+            });
+        </script>
+    </body>
 </html>

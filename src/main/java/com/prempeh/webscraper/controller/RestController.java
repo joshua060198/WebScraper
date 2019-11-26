@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.prempeh.webscraper.service.WebScrapingService;
+import java.util.HashMap;
 
 import lombok.extern.slf4j.Slf4j;
 

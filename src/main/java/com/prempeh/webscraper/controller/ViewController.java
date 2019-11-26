@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.prempeh.webscraper.service.WebScrapingService;
+import java.util.HashMap;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -52,9 +53,14 @@ public class ViewController {
 	 *             RestResponseEntityExceptionHandler Class
 	 */
 	@RequestMapping(value = { "/index" }, method = RequestMethod.POST)
-	public String postIndexPage(@RequestParam(value = "url") String url, Model model) throws IOException {
+	public String postIndexPage(@RequestParam(value = "url") String url,
+                @RequestParam(value = "path") String path,
+                @RequestParam(value = "iteration") String iteration,
+                @RequestParam(value = "element") String element,
+                Model model) throws IOException {
 
 		log.info("POST Request to Index.html with url : {}", url);
+                log.info("PARAMETER: " + url + " , " + path + " , " + iteration + " , " + element);
 
 		/**
 		 * The WebScrapingService contains a method that takes url as parameter and

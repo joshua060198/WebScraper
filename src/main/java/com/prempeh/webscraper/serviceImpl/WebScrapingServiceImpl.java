@@ -15,98 +15,117 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
 import com.prempeh.webscraper.service.WebScrapingService;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 
 import lombok.extern.slf4j.Slf4j;
+
 /**
- * This WebScrapingService Implementation takes a url, uses Jsoup to connect to the page,
- * extract links from the page and return a list of all the links on the page
- * 
+ * This WebScrapingService Implementation takes a url, uses Jsoup to connect to
+ * the page, extract links from the page and return a list of all the links on
+ * the page
+ *
  * @author Prince Prempeh Gyan
  * @version 1.1 <br/>
- *          Date: 19/10/2017
+ * Date: 19/10/2017
  *
  */
 @Service
 @Slf4j
 public class WebScrapingServiceImpl implements WebScrapingService {
 
-	@Override
-	public Map<String, Long> getSummaryOfLinksOnPage(String url) throws IOException {
-		List<String> linksExtractedOnPage = new ArrayList<>();
+    private static final long MAX_MEMORY = 1000000000;
 
-		log.info("Jsoup is connecting to : {}", url);
+    @Override
+    public Map<String, Long> getSummaryOfLinksOnPage(String url) throws IOException {
+        List<String> linksExtractedOnPage = new ArrayList<>();
 
-		/**
-		 * When Jsoup connects to the url, it parses the resource as an HTML Document
-		 * and saves it into the "webPage" variable for use
-		 */
-		Document webPage = Jsoup.connect(url).get();
+        log.info("Jsoup is connecting to : {}", url);
 
-		log.info("Extracting anchor tags from {}", url);
+        /**
+         * When Jsoup connects to the url, it parses the resource as an HTML
+         * Document and saves it into the "webPage" variable for use
+         */
+        Document webPage = Jsoup.connect(url).get();
+        BufferedWriter writer = new BufferedWriter(new FileWriter(new File(System.getProperty("user.dir"), "test.html")));
+        writer.write(webPage.toString());
+        writer.flush();
+        writer.close();
+        System.out.println(webPage.toString());
+//System.out.println(System.getProperty("user.dir"));
+        log.info("Extracting anchor tags from {}", url);
 
-		/**
-		 * The Elements map to actual elements in the HTML document saved in the
-		 * "webPage" variable. By calling the "select" method on the "webPage" variable,
-		 * the links on the page that appear in the anchor tag can be extracted by
-		 * passing "a[href]" as an argument to method "select". The result is a list of
-		 * anchor tag elements saved in the "linksOnPage" variable
-		 */
-		Elements linksOnPage = webPage.select("a[href]");
+        /**
+         * The Elements map to actual elements in the HTML document saved in the
+         * "webPage" variable. By calling the "select" method on the "webPage"
+         * variable, the links on the page that appear in the anchor tag can be
+         * extracted by passing "a[href]" as an argument to method "select". The
+         * result is a list of anchor tag elements saved in the "linksOnPage"
+         * variable
+         */
+        Elements linksOnPage = webPage.select("a[href]");
 
-		/**
-		 * Once the elements have been extracted, they need to be processed into actual
-		 * URIs. Java 8s streams and lambdas are used here to enhance performance. For
-		 * the purposes of this application only the host names of the URIs are of
-		 * interest at this level, the "schemes" and the "paths" are not necessary. All
-		 * extracted host names are added to the "linksExtractedOnPage" variable. At
-		 * this point the list may contain duplicate host names.
-		 */
-		linksOnPage.parallelStream().forEach(linkOnPage -> {
+        /**
+         * Once the elements have been extracted, they need to be processed into
+         * actual URIs. Java 8s streams and lambdas are used here to enhance
+         * performance. For the purposes of this application only the host names
+         * of the URIs are of interest at this level, the "schemes" and the
+         * "paths" are not necessary. All extracted host names are added to the
+         * "linksExtractedOnPage" variable. At this point the list may contain
+         * duplicate host names.
+         */
+        linksOnPage.parallelStream().forEach(linkOnPage -> {
 
-			try {
+            try {
 
-				URI uri = new URI(linkOnPage.attr("abs:href"));
+                URI uri = new URI(linkOnPage.attr("abs:href"));
 
-				String link = uri.getHost();
+                String link = uri.getHost();
 
-				log.info("Tag <a href= '{}'>", uri);
-				log.info("HostName = {}", link);
+                log.info("Tag <a href= '{}'>", uri);
+                log.info("HostName = {}", link);
 
-				linksExtractedOnPage.add(link);
+                linksExtractedOnPage.add(link);
 
-			} catch (URISyntaxException e) {
+            } catch (URISyntaxException e) {
 
-				System.err.println("URISyntaxException : " + "url = " + linkOnPage.attr("abs:href") + "\nMessage = "
-						+ e.getMessage());
-				System.out.println("URISyntaxException : " + "url = " + linkOnPage.attr("abs:href") + "\nMessage = "
-						+ e.getMessage());
+                System.err.println("URISyntaxException : " + "url = " + linkOnPage.attr("abs:href") + "\nMessage = "
+                        + e.getMessage());
+                System.out.println("URISyntaxException : " + "url = " + linkOnPage.attr("abs:href") + "\nMessage = "
+                        + e.getMessage());
 
-			}
-		});
+            }
+        });
 
-		log.info("Returning list of HostNames to caller");
+        log.info("Returning list of HostNames to caller");
 
-		return getSummary(linksExtractedOnPage);
-	}
+//                Map<String, Long> map2 = getSummary(linksExtractedOnPage);
+//                
+//                map2.forEach(
+//                    (key, value) -> data.merge( key, value, (v1, v2) -> v1 + v2)
+//                );
+        return getSummary(linksExtractedOnPage);
+    }
 
-	private Map<String, Long> getSummary(List<String> linksOnPage) {
-		
-		log.info("List of HostNames recieved");
-		log.info("Removing empty HostNames from list");
-		log.info("Grouping identical HostNames and counting");
-		log.info("Creating a Map with unique HostNames as key and their frequencies as values");
+    private Map<String, Long> getSummary(List<String> linksOnPage) {
 
-		/**
-		 * Since Maps have unique keys, while the stream is being processed the filtered
-		 * host names which have no empty or null elements are grouped into a Map of Key
-		 * Value pairs, where the host names are saved as Keys and their corresponding
-		 * frequencies are saved as values. The result is then returned to the caller.
-		 */
+        log.info("List of HostNames recieved");
+        log.info("Removing empty HostNames from list");
+        log.info("Grouping identical HostNames and counting");
+        log.info("Creating a Map with unique HostNames as key and their frequencies as values");
 
-		Map<String, Long> SummaryOfLinksOnPage = linksOnPage.parallelStream()
-				.filter(link -> (link != null && !link.isEmpty()))
-				.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));		
-		return SummaryOfLinksOnPage;
-	}
+        /**
+         * Since Maps have unique keys, while the stream is being processed the
+         * filtered host names which have no empty or null elements are grouped
+         * into a Map of Key Value pairs, where the host names are saved as Keys
+         * and their corresponding frequencies are saved as values. The result
+         * is then returned to the caller.
+         */
+        Map<String, Long> SummaryOfLinksOnPage = linksOnPage.parallelStream()
+                .filter(link -> (link != null && !link.isEmpty()))
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+        return SummaryOfLinksOnPage;
+    }
 
 }
